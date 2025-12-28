@@ -13,10 +13,8 @@ import java.util.*;
  */
 public class GradeManager {
 
-    // Keeps original behavior: newest grades last
     private final LinkedList<Grade> grades = new LinkedList<>();
 
-    // Optimized structures (internal use)
     private final HashMap<String, LinkedList<Grade>> gradeMap =
             new HashMap<>();
 
