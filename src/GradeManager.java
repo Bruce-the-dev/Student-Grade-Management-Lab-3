@@ -1,3 +1,4 @@
+import Caching.CacheManager;
 import Exceptions.InvalidGradeException;
 import java.util.*;
 
@@ -20,6 +21,12 @@ public class GradeManager {
 
     private final HashMap<String, HashSet<String>> courseMap =
             new HashMap<>();
+
+    private final CacheManager<String, Object> cache;
+
+    public GradeManager(CacheManager<String, Object> cache) {
+        this.cache = cache;
+    }
 
     /**
      * Adds a grade.
@@ -44,6 +51,10 @@ public class GradeManager {
                 .computeIfAbsent(grade.getStudentId(),
                         k -> new HashSet<>())
                 .add(grade.getSubject().getSubjectName());
+
+        // Invalidate cache
+        cache.invalidate("GRADES_" + grade.getStudentId());
+        cache.invalidate("STATS");
     }
 
     /**
@@ -145,14 +156,21 @@ public class GradeManager {
      * Time Complexity: O(k)
      */
     public Grade[] getGradesForStudent(String studentId) {
-
+        String key = "GRADES_"+studentId;
+        Object cached = cache.get(key);
+        if (cached != null) {
+            return (Grade[]) cached;
+        }
         LinkedList<Grade> list = gradeMap.get(studentId);
         if (list == null) return new Grade[0];
 
         LinkedList<Grade> reversed = new LinkedList<>(list);
         Collections.reverse(reversed);
 
-        return reversed.toArray(new Grade[0]);
+        Grade[] arr = reversed.toArray(new Grade[0]);
+
+        cache.put(key, arr);
+        return arr;
     }
 
     /**
