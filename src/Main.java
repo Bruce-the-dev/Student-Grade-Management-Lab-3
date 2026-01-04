@@ -22,6 +22,10 @@ public class Main {
             new ClassStatisticsPrinter(calculator);
 
     public static void main(String[] args) throws InvalidGradeException, StudentNotFoundException {
+        statsCache.startAutoRefresh(60, () -> {
+            CachedClassStatistics stats = calculator.computeStatistics();
+            statsCache.put("CLASS_STATISTICS", stats);
+        });
         initializeStudents();
         showMenu();
     }
@@ -158,6 +162,10 @@ public class Main {
                     break;
 
                 case 17:
+                    statsCache.printStats();
+                    statsCache.displayCacheContents();
+                    System.out.println("\nPress Enter to continue...");
+                    new Scanner(System.in).nextLine();
 
                     break;
 
