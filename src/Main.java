@@ -138,7 +138,6 @@ public class Main {
                     break;
 
                 case 13:
-//                    System.out.println("Not yet implemented");
                     PatternBasedSearchMenu patternSearchMenu =
                             new PatternBasedSearchMenu(studentManager,gradeManager, scanner);
 
