@@ -1,3 +1,4 @@
+import Caching.CacheManager;
 import Exceptions.StudentNotFoundException;
 import java.util.*;
 
@@ -17,6 +18,11 @@ public class StudentManager {
 
     // Preserves insertion order (original behavior)
     private final ArrayList<Student> students = new ArrayList<>();
+    private final CacheManager<String, Object> cache;
+
+    public StudentManager(CacheManager<String, Object> cache) {
+        this.cache = cache;
+    }
 
     /**
      * Adds a student.
@@ -25,7 +31,8 @@ public class StudentManager {
     public void addStudent(Student student) {
         students.add(student);
         studentMap.put(student.getStudentId(), student);
-        System.out.println("Student added successfully!");
+//        System.out.println("Student added successfully!");
+        cache.invalidate("STATS");
     }
 
     /**
@@ -35,8 +42,13 @@ public class StudentManager {
     public Student findStudent(String studentId)
             throws StudentNotFoundException {
 
+        String key = "STUDENT_" + studentId;
+        Object cached = cache.get(key);
+        if (cached != null) return (Student) cached;
+
         Student s = studentMap.get(studentId);
         if (s != null) {
+            cache.put(key,s);
             return s;
         }
 

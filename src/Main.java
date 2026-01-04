@@ -1,20 +1,31 @@
+import Caching.CacheManager;
 import Exceptions.GpaErrorException;
 import Exceptions.InvalidGradeException;
 import Exceptions.LoggerHandler;
 import Exceptions.StudentNotFoundException;
+import Statistics.CachedClassStatistics;
 
-import java.io.IOException;
 import java.util.Scanner;
 
 public class Main {
+   private static CacheManager<String, Object> cacheManager = new CacheManager<>();
+    private static CacheManager<String, CachedClassStatistics> statsCache = new CacheManager<>();
     private static Scanner scanner = new Scanner(System.in);
-    private static StudentManager studentManager = new StudentManager();
-    private static GradeManager gradeManager = new GradeManager();
+    private static StudentManager studentManager = new StudentManager(cacheManager);
+    private static GradeManager gradeManager = new GradeManager(cacheManager);
     private static GpaCalculator gpaCalculator = new GpaCalculator(gradeManager);
 
-
+    // At class level
+    private static final ClassStatisticsCalculator calculator =
+            new ClassStatisticsCalculator(gradeManager, studentManager, statsCache);
+    private static final ClassStatisticsPrinter statsPrinter =
+            new ClassStatisticsPrinter(calculator);
 
     public static void main(String[] args) throws InvalidGradeException, StudentNotFoundException {
+        statsCache.startAutoRefresh(60, () -> {
+            CachedClassStatistics stats = calculator.computeStatistics();
+            statsCache.put("CLASS_STATISTICS", stats);
+        });
         initializeStudents();
         showMenu();
     }
@@ -88,9 +99,9 @@ public class Main {
 
                 // FILE OPERATIONS
                 case 5:
-                    ExportGradesMenu exportMenu =
-                            new ExportGradesMenu(studentManager, gradeManager, scanner);
-                    exportMenu.showExportMenu();
+//                    ExportGradesMenu exportMenu =
+//                            new ExportGradesMenu(studentManager, gradeManager, scanner);
+//                    exportMenu.showExportMenu();
                     break;
 
                 case 6:
@@ -98,8 +109,8 @@ public class Main {
                     break;
 
                 case 7:
-                    BulkImportMenu bulkImportMenu= new BulkImportMenu(studentManager, gradeManager,scanner);
-                    bulkImportMenu.showImportMenu();
+//                    BulkImportMenu bulkImportMenu= new BulkImportMenu(studentManager, gradeManager,scanner);
+//                    bulkImportMenu.showImportMenu();
                     break;
 
                 // ANALYTICS & REPORTING
@@ -108,11 +119,8 @@ public class Main {
                     break;
 
                 case 9:
-                    ClassStatisticsCalculator stats =
-                            new ClassStatisticsCalculator(gradeManager, studentManager);
-                    stats.printClassStatistics();
+                    statsPrinter.print();
                     break;
-
                 case 10:
                     RealTimeDashboard dashboard = new RealTimeDashboard(studentManager, gradeManager);
                     dashboard.start();
@@ -130,8 +138,10 @@ public class Main {
                     break;
 
                 case 13:
-                    System.out.println("Not yet implemented");
-//                    patternBasedSearch();
+                    PatternBasedSearchMenu patternSearchMenu =
+                            new PatternBasedSearchMenu(studentManager,gradeManager, scanner);
+
+                    patternSearchMenu.showMenu();
                     break;
 
                 case 14:
@@ -151,8 +161,11 @@ public class Main {
                     break;
 
                 case 17:
-                    System.out.println("Not yet implemented");
-//                    manageCache();
+                    statsCache.printStats();
+                    statsCache.displayCacheContents();
+                    System.out.println("\nPress Enter to continue...");
+                    new Scanner(System.in).nextLine();
+
                     break;
 
                 case 18:
@@ -425,12 +438,12 @@ public class Main {
     private static void initializeStudents() throws InvalidGradeException {
 
         // Student 1: Alice Johnson (Regular)
-        Student alice = new RegularStudent("Alice Johnson", 20, "alice.johnson@school.edu", "+1-555-0001");
+        Student alice = new RegularStudent("Alice Johnson", 20, "alice.johnson@university.edu", "+1-555-0001");
         studentManager.addStudent(alice);
         addInitialGrades(alice.getStudentId(), 78.5, 5);
 
         // Student 2: Bob Smith (Honors)
-        Student bob = new HonorsStudent("Bob JoHnson", 21, "bob.smith@school.edu", "+1-555-0002");
+        Student bob = new HonorsStudent("Bob JoHnson", 21, "bob.smith@university.edu", "+12-999-0002");
         studentManager.addStudent(bob);
         addInitialGrades(bob.getStudentId(), 85.2, 6);
 
@@ -440,12 +453,12 @@ public class Main {
         addInitialGrades(carol.getStudentId(), 45.0, 4);
 
         // Student 4: David Chen (Honors)
-        Student david = new HonorsStudent("David Chen", 22, "david.chen@school.edu", "+1-555-0004");
+        Student david = new HonorsStudent("David Chen", 22, "david.chen@gmail.com", "+250-789-1011");
         studentManager.addStudent(david);
         addInitialGrades(david.getStudentId(), 92.8, 6);
 
         // Student 5: Emma Wilson (Regular)
-        Student emma = new RegularStudent("Emma Wilson", 20, "emma.wilson@school.edu", "+1-555-0005");
+        Student emma = new RegularStudent("Emma Wilson", 20, "emma.wilson@school.edu", "+4-367-1115");
         studentManager.addStudent(emma);
         addInitialGrades(emma.getStudentId(), 67.3, 5);
     }
@@ -486,8 +499,6 @@ public class Main {
     private static int countEnrolledSubjects(String studentId) {
         return gradeManager.getGradeCount(studentId);
     }
-
-
 
 
 }
