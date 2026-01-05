@@ -1,0 +1,8 @@
+STU001,Mathematics,Core,85
+STU006,Science,Core,92
+STU006,Mathematics,Core,92
+STU006,Science,Elective,99
+STU006,Music,Elective,92
+STU005,Music,Elective,74
+STU999,English,Core,80        <-- invalid student
+STU002,Art,Elective,110       <-- invalid grade
