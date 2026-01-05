@@ -1,3 +1,5 @@
+import Audit.AuditLogger;
+import Audit.OperationType;
 import Caching.CacheManager;
 import Exceptions.InvalidGradeException;
 import java.util.*;
@@ -23,9 +25,11 @@ public class GradeManager {
             new HashMap<>();
 
     private final CacheManager<String, Object> cache;
+    private final AuditLogger auditLogger;
 
-    public GradeManager(CacheManager<String, Object> cache) {
+    public GradeManager(CacheManager<String, Object> cache, AuditLogger auditLogger) {
         this.cache = cache;
+        this.auditLogger = auditLogger;
     }
 
     /**
@@ -33,29 +37,40 @@ public class GradeManager {
      * Time Complexity: O(1)
      */
     public void addGrade(Grade grade) throws InvalidGradeException {
+        long start = System.currentTimeMillis();
+        boolean success = false;
 
-        if (!grade.validateGrade(grade.getGrade())) {
-            throw new InvalidGradeException(
-                    "Grade must be between 0 and 100."
+        try {
+
+            if (!grade.validateGrade(grade.getGrade())) {
+                throw new InvalidGradeException("Grade must be between 0 and 100.");
+            }
+
+            grades.add(grade);
+
+            gradeMap
+                    .computeIfAbsent(grade.getStudentId(), k -> new LinkedList<>())
+                    .add(grade);
+
+            courseMap
+                    .computeIfAbsent(grade.getStudentId(), k -> new HashSet<>())
+                    .add(grade.getSubject().getSubjectName());
+
+            success = true; // operation succeeded
+        } finally {
+            long execTime = System.currentTimeMillis() - start;
+
+            auditLogger.log(
+                    OperationType.RECORD_GRADE,
+                    "Added grade for student " + grade.getStudentId() +
+                            ", subject " + grade.getSubject().getSubjectName() +
+                            ", score " + grade.getGrade(),
+                    execTime,
+                    success
             );
         }
-
-        grades.add(grade);
-
-        gradeMap
-                .computeIfAbsent(grade.getStudentId(),
-                        k -> new LinkedList<>())
-                .add(grade);
-
-        courseMap
-                .computeIfAbsent(grade.getStudentId(),
-                        k -> new HashSet<>())
-                .add(grade.getSubject().getSubjectName());
-
-        // Invalidate cache
-        cache.invalidate("GRADES_" + grade.getStudentId());
-        cache.invalidate("STATS");
     }
+
 
     /**
      * Views grades by student.

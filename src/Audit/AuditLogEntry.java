@@ -1,26 +1,25 @@
 package Audit;
 
 import java.time.Instant;
-import java.time.format.DateTimeFormatter;
 
-public final class AuditLogEntry {
+public class AuditLogEntry {
 
-    private final Instant timestamp;
-    private final long threadId;
+    private final Instant timestampUTC;
+    private final String threadId;
     private final OperationType operationType;
     private final String userAction;
     private final long executionTimeMs;
     private final boolean success;
 
     public AuditLogEntry(
-            Instant timestamp,
-            long threadId,
+            Instant timestampUTC,
+            String threadId,
             OperationType operationType,
             String userAction,
             long executionTimeMs,
             boolean success
     ) {
-        this.timestamp = timestamp;
+        this.timestampUTC = timestampUTC;
         this.threadId = threadId;
         this.operationType = operationType;
         this.userAction = userAction;
@@ -28,11 +27,11 @@ public final class AuditLogEntry {
         this.success = success;
     }
 
-    public Instant getTimestamp() {
-        return timestamp;
+    public Instant getTimestampUTC() {
+        return timestampUTC;
     }
 
-    public long getThreadId() {
+    public String getThreadId() {
         return threadId;
     }
 
@@ -40,31 +39,21 @@ public final class AuditLogEntry {
         return operationType;
     }
 
-    public String getUserAction() {
-        return userAction;
-    }
 
     public long getExecutionTimeMs() {
         return executionTimeMs;
     }
 
-    public boolean isSuccess() {
-        return success;
-    }
-
-    /**
-     * Formats the log entry as a single line (ISO-8601 compliant)
-     */
-    public String toLogLine() {
+    @Override
+    public String toString() {
         return String.format(
-                "%s | thread=%d | op=%s | time=%dms | %s | %s",
-                DateTimeFormatter.ISO_INSTANT.format(timestamp),
+                "%s | Thread=%s | Operation=%s | Action=%s | Time=%dms | Success=%s",
+                timestampUTC,
                 threadId,
                 operationType,
+                userAction,
                 executionTimeMs,
-                success ? "SUCCESS" : "FAILURE",
-                userAction
+                success
         );
     }
 }
-

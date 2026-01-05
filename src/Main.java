@@ -1,4 +1,5 @@
 import Audit.AuditLogger;
+import Audit.AuditMenu;
 import Caching.CacheManager;
 import Exceptions.GpaErrorException;
 import Exceptions.InvalidGradeException;
@@ -9,13 +10,13 @@ import Statistics.CachedClassStatistics;
 import java.util.Scanner;
 
 public class Main {
-   private static CacheManager<String, Object> cacheManager = new CacheManager<>();
+    private static CacheManager<String, Object> cacheManager = new CacheManager<>();
+    private static final AuditLogger auditLogger = new AuditLogger();
     private static CacheManager<String, CachedClassStatistics> statsCache = new CacheManager<>();
     private static Scanner scanner = new Scanner(System.in);
-    private static StudentManager studentManager = new StudentManager(cacheManager);
-    private static GradeManager gradeManager = new GradeManager(cacheManager);
+    private static StudentManager studentManager = new StudentManager(cacheManager, auditLogger);
+    private static GradeManager gradeManager = new GradeManager(cacheManager, auditLogger);
     private static GpaCalculator gpaCalculator = new GpaCalculator(gradeManager);
-    private static final AuditLogger auditLogger = new AuditLogger();
 
     // At class level
     private static final ClassStatisticsCalculator calculator =
@@ -38,7 +39,7 @@ public class Main {
         while (running) {
             System.out.println("\n╔═══════════════════════════════════════════════════╗");
             System.out.println("║   STUDENT GRADE MANAGEMENT - MAIN MENU            ║ " +
-                               "\n║      Advanced Edition v3.0]                       ║");
+                    "\n║      Advanced Edition v3.0]                       ║");
             System.out.println("╚═══════════════════════════════════════════════════╝");
             System.out.println();
             System.out.println("""
@@ -107,7 +108,8 @@ public class Main {
                     break;
 
                 case 6:
-//                    importDataMenu(); // implement this method
+                    System.out.println("Not yet Implemented");
+//                    importDataMenu();
                     break;
 
                 case 7:
@@ -126,7 +128,7 @@ public class Main {
                 case 10:
                     RealTimeDashboard dashboard = new RealTimeDashboard(studentManager, gradeManager);
                     dashboard.start();
-                  break;
+                    break;
 
                 case 11:
                     BatchReportMenuHandler batchMenu = new BatchReportMenuHandler(scanner, studentManager, gradeManager);
@@ -141,7 +143,7 @@ public class Main {
 
                 case 13:
                     PatternBasedSearchMenu patternSearchMenu =
-                            new PatternBasedSearchMenu(studentManager,gradeManager, scanner);
+                            new PatternBasedSearchMenu(studentManager, gradeManager, scanner);
 
                     patternSearchMenu.showMenu();
                     break;
@@ -171,8 +173,8 @@ public class Main {
                     break;
 
                 case 18:
-                    System.out.println("Not yet implemented");
-//                    viewAuditTrail();
+                    AuditMenu menu = new AuditMenu(auditLogger);
+                    menu.print();
                     break;
 
                 // EXIT
@@ -217,14 +219,14 @@ public class Main {
             gpaCalculator.displayGPAReport(studentId);
             int rank = gpaCalculator.getRankInClass(studentId, studentManager);
             int total = studentManager.getStudentCount();
-            System.out.println( "Rank: " + rank + " out of " + total);
+            System.out.println("Rank: " + rank + " out of " + total);
 
         } catch (GpaErrorException | StudentNotFoundException snf) {
             System.out.println("❌ ERROR: " + snf.getMessage());
             LoggerHandler.log("❌ ERROR Logged: " + snf.getMessage());
-        }catch (Exception e){
-            System.out.println("Error: "+e.getMessage());
-            LoggerHandler.log("Error logged: "+e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+            LoggerHandler.log("Error logged: " + e.getMessage());
 
         }
     }
@@ -271,7 +273,7 @@ public class Main {
 
                     for (Student s : matches) {
 
-                    System.out.printf("%-10s %-20s %-9s %.2f%n",s.getStudentId(),s.getName(),s.getStudentType(),s.calculateAverageGrade());
+                        System.out.printf("%-10s %-20s %-9s %.2f%n", s.getStudentId(), s.getName(), s.getStudentType(), s.calculateAverageGrade());
                     }
                 }
                 break;
@@ -282,10 +284,10 @@ public class Main {
                 double minGrade = scanner.nextDouble();
                 System.out.println("Enter the maximum range: ");
                 double maxGrade = scanner.nextDouble();
-                Student [] gradeMatch = studentManager.searchByGradeRange(minGrade, maxGrade,gradeManager);
+                Student[] gradeMatch = studentManager.searchByGradeRange(minGrade, maxGrade, gradeManager);
                 if (gradeMatch.length == 0) {
                     System.out.println("\n❌ No students in that grade.");
-                    LoggerHandler.log("Search By Grade range — No match for: " + minGrade+" and "+maxGrade);
+                    LoggerHandler.log("Search By Grade range — No match for: " + minGrade + " and " + maxGrade);
                 } else {
                     System.out.println("Search Results: \n");
                     System.out.println("───────────────────────────────────────────────────────────────");
@@ -293,7 +295,7 @@ public class Main {
 
                     for (Student match : gradeMatch) {
 
-                        System.out.printf("%-10s %-20s %-9s %.2f%n",match.getStudentId(),match.getName(),match.getStudentType(),match.calculateAverageGrade());
+                        System.out.printf("%-10s %-20s %-9s %.2f%n", match.getStudentId(), match.getName(), match.getStudentType(), match.calculateAverageGrade());
                     }
                 }
                 break;
@@ -306,11 +308,11 @@ public class Main {
 
                 int choiceType = scanner.nextInt();
                 String studType = "";
-                if (choiceType==1){
-                    studType="Regular";
-                }else if (choiceType==2){
-                    studType="Honors";
-                }else {
+                if (choiceType == 1) {
+                    studType = "Regular";
+                } else if (choiceType == 2) {
+                    studType = "Honors";
+                } else {
                     System.out.println("\n❌ Wrong choice try again.");
                     LoggerHandler.log("SearchByStudentType Error — Wrong choice: " + choiceType);
                 }
@@ -326,7 +328,7 @@ public class Main {
 
                     for (Student s : studTypes) {
 
-                        System.out.printf("%-10s %-20s %-9s %.2f%n",s.getStudentId(),s.getName(),s.getStudentType(),s.calculateAverageGrade());
+                        System.out.printf("%-10s %-20s %-9s %.2f%n", s.getStudentId(), s.getName(), s.getStudentType(), s.calculateAverageGrade());
                     }
                 }
 

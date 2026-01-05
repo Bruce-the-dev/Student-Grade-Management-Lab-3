@@ -1,6 +1,9 @@
+import Audit.AuditLogger;
 import Caching.CacheManager;
 import Exceptions.StudentNotFoundException;
 import java.util.*;
+
+import static Audit.OperationType.ADD_STUDENT;
 
 /**
  * StudentManager
@@ -19,9 +22,11 @@ public class StudentManager {
     // Preserves insertion order (original behavior)
     private final ArrayList<Student> students = new ArrayList<>();
     private final CacheManager<String, Object> cache;
+    private final AuditLogger auditLogger;
 
-    public StudentManager(CacheManager<String, Object> cache) {
+    public StudentManager(CacheManager<String, Object> cache, AuditLogger auditLogger) {
         this.cache = cache;
+        this.auditLogger = auditLogger;
     }
 
     /**
@@ -29,11 +34,27 @@ public class StudentManager {
      * Time Complexity: O(1)
      */
     public void addStudent(Student student) {
-        students.add(student);
-        studentMap.put(student.getStudentId(), student);
-//        System.out.println("Student added successfully!");
-        cache.invalidate("STATS");
+        long start = System.currentTimeMillis();
+        boolean success = false;
+
+        try {
+
+            students.add(student);
+            studentMap.put(student.getStudentId(), student);
+            success = true;
+            System.out.println("Student added successfully!");
+        } finally {
+            long execTime = System.currentTimeMillis() - start;
+
+            auditLogger.log(
+                    ADD_STUDENT,
+                    "Added student " + student.getStudentId(),
+                    execTime,
+                    success
+            );
+        }
     }
+
 
     /**
      * Finds student by ID.
