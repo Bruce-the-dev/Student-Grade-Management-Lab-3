@@ -77,9 +77,13 @@ HashMap lookup remained constant regardless of dataset size, while ArrayList sea
 ### Files Changed 
 ![Files Changed](Screenshots/collections_changedFiles.png)
 ---
-### PR Overview for Advanced Collections
+### PR Overview for regex validations and search
 ![PR Overview](Screenshots/PR%20for%20regex%20Validation.png)
+### PR Overview for concurrent audit trail
+![PR Overview](Screenshots/img.png)
 
+### PR Overview for Merging Develop back into Main
+![PR Overview](img.png)
 ## 🙋‍♂️ Author
 **Bruce Mutsinzi** 
 ---
