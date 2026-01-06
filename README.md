@@ -1,123 +1,76 @@
+# Student Grade Management System – Lab 3
+
+This project implements a concurrent, thread-safe student grade management system.
+It focuses on performance, scalability, and reliability using advanced Java features
+including concurrent collections, thread pools, background tasks, and asynchronous I/O.
+
 ---
-# 📘 Student Grade Management System Lab Assignment.
 
-A comprehensive Java-based student grade management system with advanced features including exception handling, reporting, and bulk imports.
+## Collections Design Decisions
+
+| Collection | Used In | Reason |
+|-----------|--------|--------|
+| `ConcurrentHashMap` | CacheManager | Thread-safe access with high performance |
+| `LinkedHashMap` | Statistics distribution | Maintains insertion order for display |
+| `HashMap` | Aggregations | Fast lookups when thread safety not required |
+| `ConcurrentLinkedQueue` | AuditLogger | Lock-free, non-blocking logging |
+| `BlockingQueue` | AuditLogger | Guarantees no log loss under concurrency |
+| `ArrayList` | Computations | Fast iteration during calculations |
+
+Design decisions prioritize:
+- Thread safety
+- Performance under concurrent access
+- Clear separation of responsibilities
 
 ---
 
-## 📌 Features
+## Thread Pool Configuration
 
-### ✔ Student Management
+### Cache Auto-Refresh
+- Uses `ScheduledExecutorService`
+- Single-threaded scheduler to avoid race conditions
+- Refresh interval configurable (60 seconds)
 
-* Add Regular and Honors students
-* Auto-generated student IDs (STU001, STU002, …)
-* View all students with type, average grade, and status
-* Honors students show eligibility (average ≥ 85%)
+### Audit Logging
+- Uses `ExecutorService` with a single background writer thread
+- Ensures asynchronous file writes
+- Prevents blocking main application flow
 
-### ✔ Grade Management
+### Why Single-Thread Executors Were Chosen
+- Guarantees log order
+- Prevents file corruption
+- Simplifies synchronization
 
-* Record grades for Core and Elective subjects
-* Grade validation (0–100)
-* Auto-generated grade IDs (GRD001, GRD002, …)
-* View grade report for any student
-* Displays grades in a table
-* Calculates:
+---
 
-  * Core Average
-  * Elective Average
-  * Overall Average
+## Regex Patterns Used
 
+| Field | Regex Pattern | Purpose |
+|-----|--------------|--------|
+| Student ID | `^STU\\d{4}$` | Enforces standardized student IDs |
+| Email | `^[\\w.-]+@[\\w.-]+\\.[A-Za-z]{2,}$` | Email validation |
+| Phone | `^\\+?\\d{10,15}$` | International phone format |
 
-## Features
+All regex validations are unit-tested.
 
-- Student Management (Regular and Honors students)
-- Grade Recording and Tracking
-- Grade Report Generation (Summary and Detailed)
-- Bulk CSV Import
-- GPA Calculation
-- Class Statistics
-- Advanced Search Functionality
+---
+
+## Testing Instructions
+Run tests with JUnit 5.
 
 ## Setup Instructions
 
 1. Clone the repository
-2. Ensure Java JDK 8+ is installed
-3. Compile: `javac *.java`
-4. Run: `java Main`
+2. Ensure Java JDK 21+ is installed
 
-
----
-
-## 🧪 Test Scenarios (from assignment)
-
-### 1️⃣ View Students
-
-* Displays 5 pre-loaded students
-* Shows type, passing grade, and eligibility
-
-### 2️⃣ Add Student
-
-* Add Regular or Honors student
-* Generates unique ID
-* Status = "Active"
-
-### 3️⃣ Record Grade
-
-* Select subject type & subject
-* Enter grade (0–100)
-* Confirms before saving
-
-### 4️⃣ View Grade Report
-
-* Grades shown in table
-* Shows averages & summary
-* Handles “no grades” case
-
-### 5️⃣ Menu Navigation
-
-* Loops until exit
-* Handles invalid input
-
-## Testing
-
-Run tests with JUnit 5.
+```md
+javac -d out src/**/*.java
+java -cp out Main
+```
 
 ---
 
-## 🧠 OOP Principles Used
-
-### ✔ **Abstraction**
-
-* `Student` and `Subject` are abstract classes
-* Define shared properties and behaviors
-
-### ✔ **Inheritance**
-
-* `RegularStudent` and `HonorsStudent` extend `Student`
-* `CoreSubject` and `ElectiveSubject` extend `Subject`
-
-### ✔ **Polymorphism**
-
-* `displayStudentDetails()` overridden in subclasses
-* One method call, different behavior based on type
-
-### ✔ **Interfaces**
-
-* `Gradable` defines grade behaviors
-
-### ✔ **Composition**
-
-* StudentManager contains `Student[]`
-* GradeManager contains `Grade[]`
-
-### ✔ **Encapsulation**
-
-* Private fields with getters/setters
-
----
-
-## 📝Screenshots of pull requests
-![screenshot showing merging feature/Exceptionhandling to develop](img.png)
+## 📝 Screenshots of Pull Requests
 
 ---
 
