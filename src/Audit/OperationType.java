@@ -1,0 +1,15 @@
+package Audit;
+
+public enum OperationType {
+    ADD_STUDENT,
+    UPDATE_STUDENT,
+    DELETE_STUDENT,
+    RECORD_GRADE,
+    GENERATE_REPORT,
+    SEARCH,
+    CACHE_REFRESH,
+    VIEW_STATISTICS,
+    SYSTEM_START,
+    SYSTEM_SHUTDOWN
+}
+

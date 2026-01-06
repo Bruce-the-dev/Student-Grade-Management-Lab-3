@@ -68,10 +68,14 @@ javac -d out src/**/*.java
 java -cp out Main
 ```
 
----
+HashMap lookup remained constant regardless of dataset size, while ArrayList search time increased linearly. This empirically validates O(1) vs O(n) complexity and justifies the use of HashMap for student and grade lookup.
 
 ## 📝 Screenshots of Pull Requests
+### PR Overview
+![PR Overview](Screenshots/Advanced_collections.png)
 
+### Files Changed
+![Files Changed](Screenshots/collections_changedFiles.png)
 ---
 
 ## 🙋‍♂️ Author
