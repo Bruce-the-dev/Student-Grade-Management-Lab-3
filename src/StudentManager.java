@@ -2,17 +2,17 @@ import Audit.AuditLogger;
 import Caching.CacheManager;
 import Exceptions.StudentNotFoundException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static Audit.OperationType.ADD_STUDENT;
 
 /**
  * StudentManager
  * <p>
- * Optimizations (US-1):
  * - HashMap<String, Student> for O(1) lookup by ID
  * - ArrayList<Student> preserved for insertion order
- * <p>
- * No public methods removed or changed.
+ * </p>
+
  */
 public class StudentManager {
 
@@ -178,6 +178,25 @@ public class StudentManager {
      * Time Complexity: O(n)
      */
     public Student[] getAllStudents() {
+
         return students.toArray(new Student[0]);
     }
+    public List<Student> findHonorsStudents(GpaCalculator gpaCalculator) {
+        return students.stream()
+                .filter(s -> {
+                    try {
+                        return gpaCalculator.calculateGPA(s.getStudentId()) > 3.5;
+                    } catch (Exception e) {
+                        return false;
+                    }
+                })
+                .collect(Collectors.toList());
+    }
+    public List<String> getAllStudentEmails() {
+        return students.stream()
+                .map(Student::getEmail)
+                .collect(Collectors.toList());
+    }
+
+
 }

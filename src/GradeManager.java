@@ -7,12 +7,10 @@ import java.util.*;
 /**
  * GradeManager
  *
- * Optimizations (US-1):
  * - LinkedList for grade history
  * - HashMap<String, LinkedList<Grade>> for fast student access
  * - HashSet for unique course tracking
  *
- * No public methods removed or changed.
  */
 public class GradeManager {
 

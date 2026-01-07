@@ -7,6 +7,7 @@ import Exceptions.LoggerHandler;
 import Exceptions.StudentNotFoundException;
 import Statistics.CachedClassStatistics;
 
+import java.util.List;
 import java.util.Scanner;
 
 public class Main {
@@ -102,9 +103,9 @@ public class Main {
 
                 // FILE OPERATIONS
                 case 5:
-//                    ExportGradesMenu exportMenu =
-//                            new ExportGradesMenu(studentManager, gradeManager, scanner);
-//                    exportMenu.showExportMenu();
+                    ExportGradesMenu exportMenu =
+                            new ExportGradesMenu(studentManager, gradeManager, scanner);
+                    exportMenu.showExportMenu();
                     break;
 
                 case 6:
@@ -113,8 +114,8 @@ public class Main {
                     break;
 
                 case 7:
-//                    BulkImportMenu bulkImportMenu= new BulkImportMenu(studentManager, gradeManager,scanner);
-//                    bulkImportMenu.showImportMenu();
+                    BulkImportMenu bulkImportMenu= new BulkImportMenu(studentManager, gradeManager,scanner);
+                    bulkImportMenu.showImportMenu();
                     break;
 
                 // ANALYTICS & REPORTING
@@ -149,8 +150,17 @@ public class Main {
                     break;
 
                 case 14:
-                    System.out.println("Not yet implemented");
-//                    queryGradeHistory();
+                    StudentAnalytics analytics = new StudentAnalytics(studentManager, gradeManager, gpaCalculator);
+                    System.out.print("Enter the student Id: ");
+
+                    String studentId =scanner.next();
+                    try {
+                        List<String> history = analytics.queryGradeHistory(studentId);
+                        history.forEach(System.out::println);
+                    } catch (StudentNotFoundException e) {
+                        System.out.println("Student not found: " + studentId);
+                    }
+
                     break;
 
                 // ADVANCED FEATURES

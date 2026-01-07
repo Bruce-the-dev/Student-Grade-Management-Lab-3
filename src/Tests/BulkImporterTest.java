@@ -1,3 +1,5 @@
+import Audit.AuditLogger;
+import Caching.CacheManager;
 import org.junit.jupiter.api.*;
 import java.io.*;
 
@@ -7,12 +9,14 @@ public class BulkImporterTest {
 
     private StudentManager studentManager;
     private GradeManager gradeManager;
-    private BulkImport importer;
+    private BulkImporter importer;
+    private static CacheManager<String, Object> cacheManager = new CacheManager<>();
+    private static final AuditLogger auditLogger = new AuditLogger();
 
     @BeforeEach
     void setup() {
-        studentManager = new StudentManager();
-        gradeManager = new GradeManager();
+        studentManager = new StudentManager(cacheManager,auditLogger);
+        gradeManager = new GradeManager(cacheManager,auditLogger);
         importer = new BulkImporter(studentManager, gradeManager);
     }
 

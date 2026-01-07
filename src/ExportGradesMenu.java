@@ -30,7 +30,6 @@ public class ExportGradesMenu {
             System.out.println("Type: " + student.getStudentType());
             System.out.println("Total Grades: " + gradeManager.getGradeCount(studentId));
 
-            // ----------------- Select Format -----------------
             System.out.println("""
                     Export Format:
                     1. CSV (Comma-Separated Values)
@@ -41,7 +40,6 @@ public class ExportGradesMenu {
             int formatChoice = scanner.nextInt();
             scanner.nextLine();
 
-            // ----------------- Select Report Type -----------------
             System.out.println("""
                     Report Type:
                     1. Summary Report
@@ -52,11 +50,9 @@ public class ExportGradesMenu {
             int reportType = scanner.nextInt();
             scanner.nextLine();
 
-            // ----------------- Filename -----------------
             System.out.print("Enter filename (without extension): ");
             String baseFileName = scanner.nextLine().trim();
 
-            // ----------------- Map Report Type -----------------
             StudentReportGenerator.ReportType reportTypeEnum;
             switch(reportType) {
                 case 1 -> reportTypeEnum = StudentReportGenerator.ReportType.SUMMARY;
@@ -69,7 +65,6 @@ public class ExportGradesMenu {
                 }
             }
 
-            // ----------------- Map Formats -----------------
             Set<String> formats = new HashSet<>();
             switch (formatChoice) {
                 case 1 -> formats.add("CSV");
@@ -82,7 +77,6 @@ public class ExportGradesMenu {
                 }
             }
 
-            // ----------------- Export -----------------
             StudentReportGenerator generator = new StudentReportGenerator(gradeManager);
             generator.exportReport(student, baseFileName, formats, reportTypeEnum);
 

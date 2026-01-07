@@ -48,7 +48,6 @@ public class BatchReportMenuHandler {
         batchGenerator.generateReports(selectedStudents, formats, reportType, numThreads);
     }
 
-    // ========================= Helper Methods =========================
     private List<Student> parseStudentSelection(String input, Student[] allStudents) {
         String[] selections = input.split(",");
         return Arrays.stream(selections)

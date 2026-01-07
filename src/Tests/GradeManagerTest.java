@@ -1,3 +1,4 @@
+import Audit.AuditLogger;
 import Caching.CacheManager;
 import Exceptions.InvalidGradeException;
 import org.junit.jupiter.api.BeforeEach;
@@ -8,10 +9,10 @@ import static org.junit.jupiter.api.Assertions.*;
 class GradeManagerTest {
 private GradeManager gradeManager;
     CacheManager<String, Object> cacheManager = new CacheManager<>();
-
+private AuditLogger auditLogger;
     @BeforeEach
     void setup() {
-        gradeManager = new GradeManager(cacheManager);
+        gradeManager = new GradeManager(cacheManager, auditLogger);
     }
 
     private Subject core(String name) {

@@ -1,3 +1,4 @@
+import Audit.AuditLogger;
 import Caching.CacheManager;
 import Exceptions.GpaErrorException;
 import Exceptions.InvalidGradeException;
@@ -8,13 +9,13 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class GpaCalculatorTest {
     CacheManager<String, Object> cacheManager = new CacheManager<>();
-
+private AuditLogger auditLogger;
     private GradeManager gradeManager;
     private GpaCalculator gpaCalc;
 
     @BeforeEach
     void setup() {
-        gradeManager = new GradeManager(cacheManager);
+        gradeManager = new GradeManager(cacheManager, auditLogger);
         gpaCalc = new GpaCalculator(gradeManager);
     }
 

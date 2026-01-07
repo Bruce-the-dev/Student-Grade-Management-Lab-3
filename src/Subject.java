@@ -6,8 +6,8 @@ import java.io.Serializable;
  */
 public abstract class Subject implements Serializable {
     private static final long serialVersionUID = 1L;
-    private final String subjectName;       // Immutable after creation
-    private final String subjectCode;       // Immutable after creation
+    private final String subjectName;
+    private final String subjectCode;
 
     public static int subjectCount = 0;
 

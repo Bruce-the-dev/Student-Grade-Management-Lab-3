@@ -1,3 +1,4 @@
+import Audit.AuditLogger;
 import Caching.CacheManager;
 import Exceptions.InvalidGradeException;
 import Exceptions.StudentNotFoundException;
@@ -13,11 +14,11 @@ public class SearchFeatureTest {
     CacheManager<String, Object> cacheManager = new CacheManager<>();
     private StudentManager studentManager;
     private GradeManager gradeManager;
-
+private AuditLogger auditLogger;
     @BeforeEach
     void setup() {
-        studentManager = new StudentManager(cacheManager);
-        gradeManager = new GradeManager(cacheManager);
+        studentManager = new StudentManager(cacheManager, auditLogger);
+        gradeManager = new GradeManager(cacheManager, auditLogger);
     }
 
     private Student createRegularStudent(String name, int age) {

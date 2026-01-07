@@ -2,6 +2,7 @@ import Exceptions.InvalidGradeException;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
@@ -11,6 +12,7 @@ import java.util.Objects;
  */
 public class Grade implements Gradable, Serializable {
 private static final long serialVersionUID = 1L;
+    private final LocalDateTime addedTime;
     private static int gradeCounter;
 
     private final String gradeId;
@@ -20,7 +22,8 @@ private static final long serialVersionUID = 1L;
 
     private double grade;
 
-    public Grade(String studentId, Subject subject, double grade) throws InvalidGradeException {
+    public Grade( String studentId, Subject subject, double grade) throws InvalidGradeException {
+        this.addedTime = LocalDateTime.now();
         gradeCounter++;
         this.gradeId = "GRD" + String.format("%03d", gradeCounter);
 
@@ -66,15 +69,7 @@ private static final long serialVersionUID = 1L;
         return grade;
     }
 
-    public static int getGradeCounter() {
-        return gradeCounter;
-    }
 
-    public static void setGradeCounter(int value) {
-        gradeCounter = value;
-    }
-
-    // ----- Gradable Interface -----
     @Override
     public boolean recordGrade(double grade) {
         if (validateGrade(grade)) {
@@ -83,7 +78,9 @@ private static final long serialVersionUID = 1L;
         }
         return false;
     }
-
+    public LocalDateTime getTimestamp() {
+        return addedTime;
+    }
     @Override
     public boolean validateGrade(double grade) {
         return grade >= 0 && grade <= 100;

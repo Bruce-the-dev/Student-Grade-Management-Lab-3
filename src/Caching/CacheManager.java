@@ -11,7 +11,6 @@ import java.time.Instant;
 public class CacheManager<K, V> {
 
     private final int MAX_SIZE = 150;
-
     // Thread-safe cache
     private final ConcurrentHashMap<K, CacheEntry<V>> cache = new ConcurrentHashMap<>();
 

@@ -4,7 +4,7 @@ import Exceptions.StudentNotFoundException;
 import java.util.*;
 
 /**
- * GPA Calculator (US-1 compliant)
+
  * - TreeMap used for GPA ranking
  * - Custom Comparator for multi-criteria sorting
  * - Preserves all original methods and signatures
@@ -16,7 +16,6 @@ public class GpaCalculator {
         this.gradeManager = gradeManager;
     }
 
-    // 1. Convert % grade → GPA scale
     public double convertToGPA(double percentage) {
         if (percentage < 0 || percentage > 100)
             throw new IllegalArgumentException("Percentage must be between 0 and 100");
@@ -33,7 +32,6 @@ public class GpaCalculator {
         return 0.0;
     }
 
-    // 3. Convert GPA → letter grade (A, B, C...)
     public String getLetterGrade(double gpa) {
         if (gpa < 0 || gpa > 4) throw new IllegalArgumentException("GPA must be between 0.0 and 4.0");
         if (gpa == 4.0) return "A";
@@ -49,7 +47,6 @@ public class GpaCalculator {
         return "F";
     }
 
-    // Calculate GPA for a student
     public double calculateGPA(String studentId) throws GpaErrorException {
         Grade[] grades = gradeManager.getGradesForStudent(studentId);
         if (grades.length == 0) {
@@ -64,7 +61,6 @@ public class GpaCalculator {
         return totalGpa / grades.length;
     }
 
-    // Display GPA report
     public void displayGPAReport(String studentId) throws GpaErrorException {
         List<Grade> gradeList = new ArrayList<>(Arrays.asList(gradeManager.getGradesForStudent(studentId)));
 

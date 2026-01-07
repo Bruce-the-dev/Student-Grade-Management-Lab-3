@@ -1,5 +1,6 @@
 import static org.junit.jupiter.api.Assertions.*;
 
+import Audit.AuditLogger;
 import Caching.CacheManager;
 import Exceptions.StudentNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,10 +10,10 @@ public class StudentManagerTest {
 
     private StudentManager studentManager;
     CacheManager<String, Object> cacheManager = new CacheManager<>();
-
+private AuditLogger auditLogger;
     @BeforeEach
     void setup() {
-        studentManager = new StudentManager(cacheManager);
+        studentManager = new StudentManager(cacheManager, auditLogger);
         Student.setStudentCounter(0);
     }
 
